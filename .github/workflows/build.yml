@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      ProjName:
+        required: true
+        type: string
+      runner:
+        required: false
+        type: string
+        default: windows-latest
+    secrets:
+      TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner }}
+    permissions:
+      packages: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Add GitHub NuGet Source
+      run: dotnet nuget add source https://nuget.pkg.github.com/ServerEmus/index.json --name "github" --username "any" --password ${{ secrets.TOKEN }} --store-password-in-clear-text
+
+    - name: Build
+      run: dotnet build ${{ inputs.ProjName }}/${{ inputs.ProjName }}.csproj -o Out
+
+    - name : Upload
+      uses: actions/upload-artifact@v4.3.5
+      with:
+        name: ${{ inputs.ProjName }}
+        path: Out/*
