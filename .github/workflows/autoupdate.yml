@@ -6,7 +6,7 @@ on:
       runner:
         required: false
         type: string
-        default: windows-latest
+        default: ubuntu-latest
     secrets:
       TOKEN:
         required: true
