@@ -10,6 +10,9 @@ on:
         required: false
         type: string
         default: windows-latest
+      uploadName:
+        required: false
+        type: string
     secrets:
       TOKEN:
         required: true
@@ -37,5 +40,5 @@ jobs:
     - name : Upload
       uses: actions/upload-artifact@v4.3.5
       with:
-        name: ${{ inputs.ProjName }}
+        name: ${{ inputs.uploadName || inputs.ProjName }}
         path: Out/*
