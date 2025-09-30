@@ -37,7 +37,7 @@ jobs:
       id: run-tool
       run: |
           mkdir Out
-          dotnet outdated -o:Out\Outdate.md -of:markdown -f
+          dotnet outdated -o:Out/Outdate.md -of:markdown -f
       continue-on-error: true
 
     - name : Upload
@@ -54,4 +54,5 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git add .
         git commit -m "Upgraded nuget dependencies!"
+
         git push
