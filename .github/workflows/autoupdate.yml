@@ -12,7 +12,7 @@ on:
         required: true
 
 jobs:
-  publish:
+  auto-update:
     runs-on: ${{ inputs.runner }}
     permissions:
         contents: write
@@ -56,4 +56,5 @@ jobs:
         git commit -m "Upgraded nuget dependencies!"
 
         git push
+
 
