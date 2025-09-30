@@ -44,7 +44,7 @@ jobs:
       uses: actions/upload-artifact@v4.3.5
       with:
         name: OutMD
-        path: Out\*
+        path: Out
         
     - name: Update package and commit
       if: steps.run-tool.outcome == 'failure'
@@ -56,3 +56,4 @@ jobs:
         git commit -m "Upgraded nuget dependencies!"
 
         git push
+
