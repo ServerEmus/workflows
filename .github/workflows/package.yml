@@ -7,6 +7,10 @@ on:
       ProjName:
         required: true
         type: string
+      PackagePrefix:
+        required: false
+        type: string
+        default: ServerEmus.
       runner:
         required: false
         type: string
@@ -37,15 +41,16 @@ jobs:
         run: dotnet build ${{ inputs.ProjName }}/${{ inputs.ProjName }}.csproj -o Out
 
       - name: Publish to GitHub Packages
-        run: dotnet nuget push Out/ServerEmus.${{ inputs.ProjName }}**.nupkg --source "github" --api-key ${{ secrets.TOKEN  }}
+        run: dotnet nuget push Out/${{ inputs.PackagePrefix }}${{ inputs.ProjName }}**.nupkg --source "github" --api-key ${{ secrets.TOKEN  }}
 
       - name : Upload
         uses: actions/upload-artifact@v4.3.5
         with:
           name: ${{ inputs.ProjName }}
-          path: Out/ServerEmus.${{ inputs.ProjName }}**.nupkg
+          path: Out/${{ inputs.PackagePrefix }}${{ inputs.ProjName }}**.nupkg
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: Out/ServerEmus.${{ inputs.ProjName }}**.nupkg
+          files: Out/${{ inputs.PackagePrefix }}${{ inputs.ProjName }}**.nupkg
+
