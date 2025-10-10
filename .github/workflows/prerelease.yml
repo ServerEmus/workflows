@@ -47,13 +47,15 @@ jobs:
         name: ${{ inputs.uploadName || inputs.ProjName }}
         path: Out/*
 
-    - name: Create 7z archive
-      uses: edgarrc/action-7z@v1
+    - name: Create zip archive
+      uses: thedoctor0/zip-release@0.7.6
       with:
-        args: 7z a -t7z -mx=9 Prerelease.7z ./Out
+        type: 'zip'
+        filename: 'Prerelease.zip'
+        path: Out
 
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
-        files: Prerelease.7z
+        files: Prerelease.zip
         prerelease: True
