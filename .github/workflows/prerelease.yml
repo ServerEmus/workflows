@@ -1,0 +1,58 @@
+name: Pre Release
+
+on:
+  workflow_call:
+    inputs:
+      ProjName:
+        required: true
+        type: string
+      runner:
+        required: false
+        type: string
+        default: windows-latest
+      uploadName:
+        required: false
+        type: string
+    secrets:
+      TOKEN:
+        required: true
+
+jobs:
+  prerelease:
+    runs-on: ${{ inputs.runner }}
+    permissions:
+      packages: read
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Add GitHub NuGet Source
+      run: dotnet nuget add source https://nuget.pkg.github.com/ServerEmus/index.json --name "github" --username "any" --password ${{ secrets.TOKEN }} --store-password-in-clear-text
+
+    - name: Build
+      run: dotnet build ${{ inputs.ProjName }}/${{ inputs.ProjName }}.csproj -o Out
+
+    - name: Run test
+      run: dotnet test
+
+    - name : Upload
+      uses: actions/upload-artifact@v4.3.5
+      with:
+        name: ${{ inputs.uploadName || inputs.ProjName }}
+        path: Out/*
+
+    - name: Create zip archive
+      run: |
+        zip -r Prerelease.zip Out
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: Prerelease.zip
+        prerelease: True
