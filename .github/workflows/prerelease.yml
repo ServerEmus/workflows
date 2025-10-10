@@ -48,7 +48,7 @@ jobs:
         path: Out/*
 
     - name: Create 7z archive
-    - uses: edgarrc/action-7z@v1
+      uses: edgarrc/action-7z@v1
       with:
         args: 7z a -t7z -mx=9 Prerelease.7z ./Out
 
