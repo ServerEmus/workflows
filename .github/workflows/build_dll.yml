@@ -31,6 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        
     permissions:
       packages: read
 
@@ -68,7 +69,7 @@ jobs:
       run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r osx-x64 -c:Release -p:Platform=${{ inputs.platform64 }} -o Out
 
     - name : Sign
-      if: matrix.os == 'windows-latest' && ${{ secrets.Sign_PFX != '' }}
+      if: matrix.os == 'windows-latest' && secrets.Sign_PFX != ''
       uses: dlemstra/code-sign-action@v1
       with:
         certificate: '${{ secrets.Sign_PFX }}'

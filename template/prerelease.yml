@@ -8,6 +8,9 @@ on:
 
 jobs:
   prerelease:
+    permissions:
+      packages: read
+      contents: write
     uses: ServerEmus/workflows/.github/workflows/prerelease.yml@main
     with:
       ProjName: RENAME_ME

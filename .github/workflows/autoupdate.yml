@@ -15,8 +15,8 @@ jobs:
   auto-update:
     runs-on: ${{ inputs.runner }}
     permissions:
-        contents: write
-        packages: write
+      contents: write
+      packages: write
     
     steps:
     - uses: actions/checkout@v4
