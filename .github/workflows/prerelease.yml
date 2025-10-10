@@ -48,9 +48,9 @@ jobs:
         path: Out/*
 
     - name: Create zip archive
-    - uses: montudor/action-zip@v1
+      uses: montudor/action-zip@v1
       with:
-          args: zip -r Prerelease.zip Out
+        args: zip -r Prerelease.zip Out
 
     - name: Release
       uses: softprops/action-gh-release@v2
