@@ -1,0 +1,14 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - "release-*"
+
+jobs:
+  publish-package:
+    uses: ServerEmus/workflows/.github/workflows/package.yml@main
+    with:
+      ProjName: RENAME_ME
+    secrets:
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      ProjName:
+        required: true
+        type: string
+      uploadName:
+        required: false
+        type: string
+      platform32:
+        required: false
+        type: string
+        default: x86
+      platform64:
+        required: false
+        type: string
+        default: x64
+    secrets:
+      TOKEN:
+        required: true
+      Sign:
+        required: false
+
+
+jobs:
+  build:
+    name: ${{ matrix.os }} Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    permissions:
+      packages: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Add GitHub NuGet Source
+      run: dotnet nuget add source https://nuget.pkg.github.com/ServerEmus/index.json --name "github" --username "any" --password ${{ secrets.TOKEN }} --store-password-in-clear-text
+
+    - name: Build
+      run: dotnet build ${{ inputs.ProjName }}/${{ inputs.ProjName }}.csproj
+
+    - name: Run test
+      run: dotnet test
+
+    - name: Build W 32
+      if: matrix.os == 'windows-latest'
+      run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r win-x86 -c:Release -p:Platform=${{ inputs.platform32 }} -o Out
+
+    - name: Build W 64
+      if: matrix.os == 'windows-latest'
+      run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r win-x64 -c:Release -p:Platform=${{ inputs.platform64 }} -o Out
+
+    - name: Build L 64
+      if: matrix.os == 'ubuntu-latest'
+      run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r linux-x64 -c:Release -p:Platform=${{ inputs.platform64 }} -o Out
+
+    - name: Build O 64
+      if: matrix.os == 'macos-latest'
+      run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r osx-x64 -c:Release -p:Platform=${{ inputs.platform64 }} -o Out
+
+    - name : Sign
+      if: matrix.os == 'windows-latest' && ${{ secrets.Sign_PFX != '' }}
+      uses: dlemstra/code-sign-action@v1
+      with:
+        certificate: '${{ secrets.Sign_PFX }}'
+        folder: 'Out'
+        recursive: true
+
+    - name : Upload
+      uses: actions/upload-artifact@v4.3.5
+      with:
+        name: ${{ inputs.uploadName || inputs.ProjName }}-${{ matrix.os }}
+        path: Out/*
