@@ -55,7 +55,10 @@ jobs:
         path: Out
 
     - name: Release
-      uses: softprops/action-gh-release@v2
+      uses: "marvinpinto/action-automatic-releases@latest"
       with:
+        repo_token: "${{ secrets.TOKEN }}"
+        automatic_release_tag: "prerelease"
+        prerelease: true
+        title: "Prerelease Build"
         files: Prerelease.zip
-        prerelease: True
