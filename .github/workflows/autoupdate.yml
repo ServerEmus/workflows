@@ -19,7 +19,7 @@ jobs:
       packages: write
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -33,14 +33,14 @@ jobs:
       run: dotnet tool install --global dotnet-outdated-tool
       
     - name: Run tool
+      continue-on-error: true
       id: run-tool
       run: |
           mkdir Out
           dotnet outdated -o:Out/Outdate.md -of:markdown -f
-      continue-on-error: true
 
     - name : Upload
-      uses: actions/upload-artifact@v4.3.5
+      uses: actions/upload-artifact@v5
       with:
         name: OutMD
         path: Out

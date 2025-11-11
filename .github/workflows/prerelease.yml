@@ -25,12 +25,12 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 10.0.x
 
     - name: Add GitHub NuGet Source
       run: dotnet nuget add source https://nuget.pkg.github.com/ServerEmus/index.json --name "github" --username "any" --password ${{ secrets.TOKEN }} --store-password-in-clear-text
@@ -42,7 +42,7 @@ jobs:
       run: dotnet test
 
     - name : Upload
-      uses: actions/upload-artifact@v4.3.5
+      uses: actions/upload-artifact@v5
       with:
         name: ${{ inputs.uploadName || inputs.ProjName }}
         path: Out/*
@@ -55,7 +55,7 @@ jobs:
         path: Out
 
     - name: Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v2.4.2
       with:
         token: ${{ secrets.TOKEN }}
         prerelease: True
