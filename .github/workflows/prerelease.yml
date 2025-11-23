@@ -19,6 +19,7 @@ on:
 
 jobs:
   prerelease:
+    name: PreRelease
     runs-on: ${{ inputs.runner }}
     permissions:
       packages: read

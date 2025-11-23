@@ -1,4 +1,4 @@
-name: Build DLL
+name: Pre Release DLL
 
 on:
   workflow_call:
@@ -6,35 +6,24 @@ on:
       ProjName:
         required: true
         type: string
+      runner:
+        required: false
+        type: string
+        default: windows-latest
       uploadName:
         required: false
         type: string
-      platform32:
-        required: false
-        type: string
-        default: x86
-      platform64:
-        required: false
-        type: string
-        default: x64
     secrets:
       TOKEN:
         required: true
-      Sign:
-        required: false
-
 
 jobs:
-  build_dll:
-    name: ${{ matrix.os }} Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        
+  prerelease:
+    name: Pre Release DLL
+    runs-on: ${{ inputs.runner }}
     permissions:
-      contents: read
       packages: read
+      contents: write
 
     steps:
     - uses: actions/checkout@v5
@@ -69,17 +58,23 @@ jobs:
       if: matrix.os == 'macos-latest'
       run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r osx-x64 -c:Release -p:Platform=${{ inputs.platform64 }} -o Out
 
-    - name : Sign
-      if: matrix.os == 'windows-latest' && secrets.Sign_PFX != ''
-      uses: dlemstra/code-sign-action@v1
-      continue-on-error: true
-      with:
-        certificate: '${{ secrets.Sign_PFX }}'
-        folder: 'Out'
-        recursive: true
-
     - name : Upload
       uses: actions/upload-artifact@v5
       with:
-        name: ${{ inputs.uploadName || inputs.ProjName }}-${{ matrix.os }}
+        name: ${{ inputs.uploadName || inputs.ProjName }}
         path: Out/*
+
+    - name: Create zip archive
+      uses: thedoctor0/zip-release@0.7.6
+      with:
+        type: 'zip'
+        filename: 'Prerelease.zip'
+        path: Out
+
+    - name: Release
+      uses: softprops/action-gh-release@v2.4.2
+      with:
+        token: ${{ secrets.TOKEN }}
+        prerelease: True
+        files: Prerelease.zip
+        tag_name: prerelease

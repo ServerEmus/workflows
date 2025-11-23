@@ -13,6 +13,7 @@ on:
 
 jobs:
   auto-update:
+    name: Auto Update
     runs-on: ${{ inputs.runner }}
     permissions:
       contents: write
@@ -20,6 +21,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v5
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -45,15 +48,15 @@ jobs:
         name: OutMD
         path: Out
         
-    - name: Update package and commit
+    - name: Update packages and test
+      id: update-test
       if: steps.run-tool.outcome == 'failure'
       run: |
         dotnet outdated -u
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
-        git add .
-        git commit -m "Upgraded nuget dependencies!"
+        dotnet build
+        dotnet test
 
-        git push
-
-
+    - uses: stefanzweifel/git-auto-commit-action@v7
+      if: steps.update-test.outcome != 'failure'
+      with:
+        commit_message: "Upgraded nuget dependencies!"
