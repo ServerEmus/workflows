@@ -14,7 +14,10 @@ on:
         required: false
         type: string
         default: ubuntu-latest
-
+    secrets:
+      TOKEN:
+        required: true
+        
 jobs:
   publish:
     name: Publish Package
@@ -32,7 +35,7 @@ jobs:
         dotnet-version: 10.0.x
 
     - name: Add GitHub NuGet Source
-      run: dotnet nuget add source https://nuget.pkg.github.com/ServerEmus/index.json --name "github" --username "any" --password ${{ secrets.PUBLISHER_TOKEN }} --store-password-in-clear-text
+      run: dotnet nuget add source https://nuget.pkg.github.com/ServerEmus/index.json --name "github" --username "any" --password ${{ secrets.TOKEN }} --store-password-in-clear-text
 
     - name: Build
       run: dotnet build ${{ inputs.ProjName }}/${{ inputs.ProjName }}.csproj -o Out
@@ -49,7 +52,8 @@ jobs:
         files: Out/${{ inputs.PackagePrefix }}${{ inputs.ProjName }}**.nupkg
 
     - name: Publish to GitHub Packages
-      run: dotnet nuget push Out/${{ inputs.PackagePrefix }}${{ inputs.ProjName }}**.nupkg --source "github" --api-key ${{ secrets.PUBLISHER_TOKEN }}
+      run: dotnet nuget push Out/${{ inputs.PackagePrefix }}${{ inputs.ProjName }}**.nupkg --source "github" --api-key ${{ secrets.TOKEN }}
+
 
 
 
