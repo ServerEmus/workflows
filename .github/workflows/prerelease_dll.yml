@@ -26,7 +26,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
@@ -59,7 +59,7 @@ jobs:
       run: dotnet publish ${{ env.ProjName }}/${{ env.ProjName }}.csproj -r osx-x64 -c:Release -p:Platform=${{ inputs.platform64 }} -o Out
 
     - name : Upload
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.uploadName || inputs.ProjName }}
         path: Out/*
@@ -72,7 +72,7 @@ jobs:
         path: Out
 
     - name: Release
-      uses: softprops/action-gh-release@v2.4.2
+      uses: softprops/action-gh-release@v2.6.1
       with:
         token: ${{ secrets.TOKEN }}
         prerelease: True
