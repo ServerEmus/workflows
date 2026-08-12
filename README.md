@@ -62,6 +62,7 @@ ProjName: Name of the csproj file it being used. It is also for path "MyTestProj
 uploadName: Uploading the artifact with this name if set.\
 platform32: Name of the 32 bit platform.\
 platform64: Name of the 64 bit platform.\
+signfiles: The files to sign.\
 TOKEN: Github token to push changes into repository.
 ```yml
 with:
@@ -69,6 +70,7 @@ with:
     uploadName: MyTestProject
     platform32: x32
     platform64: x64
+    signfiles: "Out/MyTest.dll Out/Mytest.exe"
 secrets:
     TOKEN: ${{ secrets.GITHUB_TOKEN }}
     Sign: ${{ secrets.Sign_PFX }}

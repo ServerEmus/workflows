@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: x64
+      signfiles:
+        required: false
+        type: string
+        default: ''
     secrets:
       TOKEN:
         required: true
@@ -37,10 +41,10 @@ jobs:
       packages: read
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.0.x
 
@@ -71,12 +75,12 @@ jobs:
 
     - name : Sign
       if: matrix.os == 'windows-latest' && secrets.Sign_PFX != ''
-      uses: dlemstra/code-sign-action@v1
+      uses: ServerEmus/sign_action@main
       continue-on-error: true
       with:
         certificate: '${{ secrets.Sign_PFX }}'
-        folder: 'Out'
-        recursive: true
+        file: ${{ inputs.signfiles }}
+        password: ServerEmus
 
     - name : Upload
       uses: actions/upload-artifact@v7
